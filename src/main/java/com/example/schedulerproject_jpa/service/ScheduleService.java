@@ -43,9 +43,11 @@ public class ScheduleService {
     @Transactional
     public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto dto){
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("일정을 찾을 수 없습니다."));
+        schedule.update(dto.getUser(), dto.getTitle(), dto.getTodo());
         return new ScheduleResponseDto(schedule);
     }
 
+    @Transactional
     public void deleteSchedule(Long id){
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("일정을 찾을 수 없습니다."));
         scheduleRepository.delete(schedule);

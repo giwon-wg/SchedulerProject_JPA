@@ -42,4 +42,9 @@ public class Schedule {
         this.todo = todo;
     }
 
+    public void update(String user, String title, String todo){
+        this.user = user;
+        this.title = title;
+        this.todo = todo;
+    }
 }

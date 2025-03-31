@@ -28,6 +28,7 @@ public class ScheduleController {
     public List<ScheduleResponseDto> getAllSchedule(){
         return scheduleService.getAllSchedules();
     }
+
     //개별 일정 조회
     @GetMapping("/{id}")
     public ScheduleResponseDto getSchedule(@PathVariable Long id){
@@ -35,6 +36,7 @@ public class ScheduleController {
     }
 
     //일정 수정
+    @PutMapping("/{id}")
     public ScheduleResponseDto updateSchedule(@PathVariable Long id, @RequestBody @Valid ScheduleRequestDto dto){
         return scheduleService.updateSchedule(id, dto);
     }
@@ -44,6 +46,4 @@ public class ScheduleController {
     public void deleteSchedule(@PathVariable Long id){
         scheduleService.deleteSchedule(id);
     }
-
-
 }

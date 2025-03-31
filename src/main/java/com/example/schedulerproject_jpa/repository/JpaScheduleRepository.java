@@ -3,10 +3,12 @@ package com.example.schedulerproject_jpa.repository;
 import com.example.schedulerproject_jpa.entity.Schedule;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class JpaScheduleRepository implements ScheduleRepository {
 
     @PersistenceContext

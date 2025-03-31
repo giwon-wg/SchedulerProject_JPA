@@ -36,4 +36,10 @@ public class Schedule {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
+    public Schedule(String user, String title, String todo){
+        this.user = user;
+        this.title = title;
+        this.todo = todo;
+    }
+
 }

@@ -9,6 +9,9 @@ import com.example.schedulerproject_jpa.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
@@ -20,7 +23,7 @@ public class ScheduleService {
         Schedule schedule = new Schedule(
                 dto.getUser(),
                 dto.getTitle(),
-                dto.getTitle()
+                dto.getTodo()
         );
         Schedule saved = scheduleRepository.save(schedule);
         return new ScheduleResponseDto(saved);
@@ -30,6 +33,11 @@ public class ScheduleService {
     public ScheduleResponseDto getSchedule(Long id){
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다."));
         return new ScheduleResponseDto(schedule);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ScheduleResponseDto> getAllSchedules(){
+        return scheduleRepository.findAll().stream().map(ScheduleResponseDto::new).collect(Collectors.toList());
     }
 
     @Transactional

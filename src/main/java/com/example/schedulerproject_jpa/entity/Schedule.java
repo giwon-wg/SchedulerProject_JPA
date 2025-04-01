@@ -22,8 +22,9 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(nullable = false, length = 50)
     private String title;
@@ -40,14 +41,13 @@ public class Schedule {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
-    public Schedule(String user, String title, String todo){
+    public Schedule(User user, String title, String todo){
         this.user = user;
         this.title = title;
         this.todo = todo;
     }
 
-    public void update(String user, String title, String todo){
-        this.user = user;
+    public void update(String title, String todo){
         this.title = title;
         this.todo = todo;
     }

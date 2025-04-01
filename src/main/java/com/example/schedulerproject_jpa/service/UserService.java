@@ -1,6 +1,7 @@
 package com.example.schedulerproject_jpa.service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.example.schedulerproject_jpa.authentication.PasswordVerifier;
 import com.example.schedulerproject_jpa.config.PasswordEncoder;
 import com.example.schedulerproject_jpa.dto.UserRequestDto;
 import com.example.schedulerproject_jpa.dto.UserResponseDto;
@@ -18,6 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordVerifier passwordVerifier;
 
     @Transactional
     public UserResponseDto createUser(UserRequestDto dto){
@@ -44,6 +46,8 @@ public class UserService {
     public UserResponseDto updateUser(Long id, UserRequestDto dto){
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
+        passwordVerifier.verify(dto.getPassword(), user.getPassword());
+
         String hashPassword = BCrypt.withDefaults().hashToString(12, dto.getPassword().toCharArray());
 
         user.update(dto.getUserName(), dto.getEmail(), hashPassword);
@@ -51,8 +55,11 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(Long id){
+    public void deleteUser(Long id, UserRequestDto dto){
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
+        passwordVerifier.verify(dto.getPassword(), user.getPassword());
+
         userRepository.delete(user);
     }
 

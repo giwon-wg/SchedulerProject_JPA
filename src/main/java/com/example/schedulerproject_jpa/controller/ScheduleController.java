@@ -43,7 +43,7 @@ public class ScheduleController {
 
     //일정 삭제
     @DeleteMapping("/{id}")
-    public void deleteSchedule(@PathVariable Long id){
-        scheduleService.deleteSchedule(id);
+    public void deleteSchedule(@PathVariable Long id, @RequestBody @Valid ScheduleRequestDto dto){
+        scheduleService.deleteSchedule(id, dto);
     }
 }

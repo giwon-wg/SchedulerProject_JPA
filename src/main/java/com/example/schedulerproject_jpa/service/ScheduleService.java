@@ -1,5 +1,6 @@
 package com.example.schedulerproject_jpa.service;
 
+import com.example.schedulerproject_jpa.authentication.PasswordVerifier;
 import com.example.schedulerproject_jpa.dto.ScheduleRequestDto;
 import com.example.schedulerproject_jpa.dto.ScheduleResponseDto;
 import com.example.schedulerproject_jpa.entity.User;
@@ -19,6 +20,7 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
+    private final PasswordVerifier passwordVerifier;
 
     @Transactional
     public ScheduleResponseDto createSchedule(ScheduleRequestDto dto){
@@ -53,13 +55,21 @@ public class ScheduleService {
     @Transactional
     public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto dto){
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("일정을 찾을 수 없습니다."));
+
+        User user = schedule.getUser();
+        passwordVerifier.verify(dto.getPassword(), user.getPassword());
+
         schedule.update(dto.getTitle(), dto.getTodo());
         return new ScheduleResponseDto(schedule);
     }
 
     @Transactional
-    public void deleteSchedule(Long id){
+    public void deleteSchedule(Long id, ScheduleRequestDto dto){
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("일정을 찾을 수 없습니다."));
+
+        User user = schedule.getUser();
+        passwordVerifier.verify(dto.getPassword(), user.getPassword());
+
         scheduleRepository.delete(schedule);
     }
 }

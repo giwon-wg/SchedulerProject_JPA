@@ -1,6 +1,7 @@
 package com.example.schedulerproject_jpa.service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.example.schedulerproject_jpa.config.PasswordEncoder;
 import com.example.schedulerproject_jpa.dto.UserRequestDto;
 import com.example.schedulerproject_jpa.dto.UserResponseDto;
 import com.example.schedulerproject_jpa.entity.User;
@@ -16,11 +17,12 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserResponseDto createUser(UserRequestDto dto){
 
-        String hashPassword = BCrypt.withDefaults().hashToString(12, dto.getPassword().toCharArray());
+        String hashPassword = passwordEncoder.encde(dto.getPassword());
 
         User user = new User(dto.getUserName(), dto.getEmail(), hashPassword);
         User saved = userRepository.save(user);
@@ -57,9 +59,7 @@ public class UserService {
     public User login(String email, String password){
         User user = userRepository.findByEmail(email).orElseThrow(()-> new IllegalArgumentException("존재하지 않는 이메일 입니다."));
 
-        BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), user.getPassword());
-
-        if(!result.verified){
+        if(!passwordEncoder.matches(password, user.getPassword())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         return user;

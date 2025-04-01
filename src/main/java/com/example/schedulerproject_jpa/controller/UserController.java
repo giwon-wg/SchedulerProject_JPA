@@ -1,8 +1,12 @@
 package com.example.schedulerproject_jpa.controller;
 
+import com.example.schedulerproject_jpa.dto.LoginRequestDto;
 import com.example.schedulerproject_jpa.dto.UserRequestDto;
 import com.example.schedulerproject_jpa.dto.UserResponseDto;
+import com.example.schedulerproject_jpa.entity.User;
 import com.example.schedulerproject_jpa.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +22,7 @@ public class UserController {
 
     //유저 생성
     @PostMapping
-    public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto dto){
+    public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid UserRequestDto dto){
         return ResponseEntity.ok(userService.createUser(dto));
     }
 
@@ -45,5 +49,18 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id){
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto dto, HttpServletRequest request){
+        try{
+            User user = userService.login(dto.getEmail(), dto.getPassword());
+
+            request.getSession(true).setAttribute("loginUser", user.getId());
+
+            return ResponseEntity.ok("로그인 완료");
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
     }
 }

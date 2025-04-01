@@ -35,4 +35,9 @@ public class JpaUserRepository implements UserRepository {
     public void delete(User user) {
         em.remove(user);
     }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return em.createQuery("SELECT u FROM User u where u.email = :email", User.class).setParameter("email", email).getResultList().stream().findFirst();
+    }
 }

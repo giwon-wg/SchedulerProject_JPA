@@ -8,8 +8,6 @@ import com.example.schedulerproject_jpa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +52,17 @@ public class UserService {
     public void deleteUser(Long id){
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
         userRepository.delete(user);
+    }
+
+    public User login(String email, String password){
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new IllegalArgumentException("존재하지 않는 이메일 입니다."));
+
+        BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), user.getPassword());
+
+        if(!result.verified){
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+        return user;
     }
 
 }

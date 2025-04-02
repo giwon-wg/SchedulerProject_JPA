@@ -17,14 +17,28 @@ public class LoginCheckFilter implements Filter {
     private static final List<String> whiteList = List.of(
             "/api/users/login",
             "/api/users",
-            "/api/schedules"
+            "/api/schedules",
+            "/api/comments"
             );
 
     private boolean isWhiteList(String uri, String method){
+        //스케줄조회
         if(uri.equals("/api/schedules") && method.equals("GET")){
             return true;
         }
+
+        //스케줄 조회
         if(uri.startsWith("/api/schedules") && method.equals("GET")){
+            return true;
+        }
+
+        //댓글 삭제
+        if(uri.matches("/api/comments/\\d+$") && method.equals("DELETE")){
+            return true;
+        }
+
+        //댓글 수정
+        if(uri.matches("/api/comments/\\d+$") && method.equals("PUT")){
             return true;
         }
         return whiteList.contains(uri);

@@ -18,6 +18,7 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
+    /** 일정 작성 */
     @Transactional
     public ScheduleResponseDto createSchedule(ScheduleRequestDto dto, User loginUser){
         Schedule schedule = new Schedule(loginUser, dto.getTitle(), dto.getTodo());
@@ -25,17 +26,20 @@ public class ScheduleService {
         return new ScheduleResponseDto(saved);
     }
 
+    /** 일정 조회 */
     @Transactional(readOnly = true)
     public ScheduleResponseDto getSchedule(Long id){
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다."));
         return new ScheduleResponseDto(schedule);
     }
 
+    /** 일정 전체 조회 */
     @Transactional(readOnly = true)
     public List<ScheduleResponseDto> getAllSchedules(){
         return scheduleRepository.findAll().stream().map(ScheduleResponseDto::new).collect(Collectors.toList());
     }
 
+    /** 일정 업데이트 */
     @Transactional
     public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto dto, User loginUser) {
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다."));
@@ -48,6 +52,7 @@ public class ScheduleService {
         return new ScheduleResponseDto(schedule);
     }
 
+    /** 일정 삭제 */
     @Transactional
     public void deleteSchedule(Long id, User loginUser){
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("일정을 찾을 수 없습니다."));

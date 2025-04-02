@@ -21,6 +21,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final PasswordVerifier passwordVerifier;
 
+    /** 유저 작성 */
     @Transactional
     public UserResponseDto createUser(UserRequestDto dto){
 
@@ -31,17 +32,20 @@ public class UserService {
         return new UserResponseDto(saved);
     }
 
+    /** 유저 조회 */
     @Transactional
     public UserResponseDto getUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
         return new UserResponseDto(user);
     }
 
+    /** 유저 전체 조회 */
     @Transactional
     public List<UserResponseDto> getAllUser(){
         return userRepository.findAll().stream().map(UserResponseDto::new).collect(Collectors.toList());
     }
 
+    /** 유저 수정 */
     @Transactional
     public UserResponseDto updateUser(Long id, UserRequestDto dto){
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
@@ -54,6 +58,7 @@ public class UserService {
         return new UserResponseDto(user);
     }
 
+    /** 유저 삭제 */
     @Transactional
     public void deleteUser(Long id, UserRequestDto dto){
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));

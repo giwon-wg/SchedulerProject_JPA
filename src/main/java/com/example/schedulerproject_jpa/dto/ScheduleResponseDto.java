@@ -2,10 +2,12 @@ package com.example.schedulerproject_jpa.dto;
 
 import com.example.schedulerproject_jpa.entity.Schedule;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor
 public class ScheduleResponseDto {
 
     private Long id;

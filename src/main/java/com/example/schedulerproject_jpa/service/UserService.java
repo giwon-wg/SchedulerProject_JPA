@@ -24,7 +24,7 @@ public class UserService {
     @Transactional
     public UserResponseDto createUser(UserRequestDto dto){
 
-        String hashPassword = passwordEncoder.encde(dto.getPassword());
+        String hashPassword = passwordEncoder.encode(dto.getPassword());
 
         User user = new User(dto.getUserName(), dto.getEmail(), hashPassword);
         User saved = userRepository.save(user);
@@ -70,6 +70,11 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         return user;
+    }
+
+    @Transactional(readOnly = true)
+    public User findUserId(Long id){
+        return userRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("유저를 찾을 수 없습니다."));
     }
 
 }

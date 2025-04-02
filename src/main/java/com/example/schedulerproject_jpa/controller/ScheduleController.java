@@ -1,9 +1,13 @@
 package com.example.schedulerproject_jpa.controller;
 
 
+import com.example.schedulerproject_jpa.authentication.LoginSession;
 import com.example.schedulerproject_jpa.dto.ScheduleRequestDto;
 import com.example.schedulerproject_jpa.dto.ScheduleResponseDto;
+import com.example.schedulerproject_jpa.entity.User;
 import com.example.schedulerproject_jpa.service.ScheduleService;
+import com.example.schedulerproject_jpa.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +20,15 @@ import java.util.List;
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
+    private final UserService userService;
 
     //일정 생성
     @PostMapping
-    public ScheduleResponseDto createSchedule(@RequestBody @Valid ScheduleRequestDto dto){
-        return scheduleService.createSchedule(dto);
+    public ScheduleResponseDto createSchedule(@RequestBody @Valid ScheduleRequestDto dto, HttpSession session){
+        Long userId = LoginSession.getLoginUserId(session);
+        User loginUser = userService.findUserId(userId);
+
+        return scheduleService.createSchedule(dto, loginUser);
     }
 
     //전체 일정 조회
@@ -35,15 +43,20 @@ public class ScheduleController {
         return scheduleService.getSchedule(id);
     }
 
+
     //일정 수정
     @PutMapping("/{id}")
-    public ScheduleResponseDto updateSchedule(@PathVariable Long id, @RequestBody @Valid ScheduleRequestDto dto){
-        return scheduleService.updateSchedule(id, dto);
+    public ScheduleResponseDto updateSchedule(@PathVariable Long id, @RequestBody @Valid ScheduleRequestDto dto, HttpSession session){
+        Long userId = LoginSession.getLoginUserId(session);
+        User loginUser = userService.findUserId(userId);
+        return scheduleService.updateSchedule(id, dto, loginUser);
     }
 
     //일정 삭제
     @DeleteMapping("/{id}")
-    public void deleteSchedule(@PathVariable Long id, @RequestBody @Valid ScheduleRequestDto dto){
-        scheduleService.deleteSchedule(id, dto);
+    public void deleteSchedule(@PathVariable Long id, HttpSession session){
+        Long userId = LoginSession.getLoginUserId(session);
+        User loginUser = userService.findUserId(userId);
+        scheduleService.deleteSchedule(id, loginUser);
     }
 }

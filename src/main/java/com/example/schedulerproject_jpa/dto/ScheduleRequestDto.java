@@ -20,7 +20,4 @@ public class ScheduleRequestDto {
     @NotBlank(message = "내용은 필수입니다.")
     private String todo;
 
-    @NotBlank(message = "비밀번호는 필수입니다.")
-    private String password;
-
 }

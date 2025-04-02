@@ -12,8 +12,8 @@ public class PasswordVerifier {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void verify(String inputpassword, String dbPassword){
-        if(!passwordEncoder.matches(inputpassword, dbPassword)){
+    public void verify(String inputPassword, String dbPassword){
+        if(!passwordEncoder.matches(inputPassword, dbPassword)){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
     }

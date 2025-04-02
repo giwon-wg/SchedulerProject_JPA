@@ -14,10 +14,20 @@ import jakarta.servlet.Filter;
 
 public class LoginCheckFilter implements Filter {
 
-    private static final List<String> whiteList = List.of("/api/users/login", "/api/users");
+    private static final List<String> whiteList = List.of(
+            "/api/users/login",
+            "/api/users",
+            "/api/schedules"
+            );
 
-    private boolean isWhiteList(String uri){
-        return whiteList.stream().anyMatch(uri::equals);
+    private boolean isWhiteList(String uri, String method){
+        if(uri.equals("/api/schedules") && method.equals("GET")){
+            return true;
+        }
+        if(uri.startsWith("/api/schedules") && method.equals("GET")){
+            return true;
+        }
+        return whiteList.contains(uri);
     }
 
     @Override
@@ -26,16 +36,17 @@ public class LoginCheckFilter implements Filter {
         HttpServletResponse rs = (HttpServletResponse) response;
 
         String requestURI = rq.getRequestURI();
+        String method = rq.getMethod();
 
-        if(isWhiteList(requestURI)){
+        if(isWhiteList(requestURI, method)){
             chain.doFilter(request, response);
             return;
         }
+
         HttpSession session = rq.getSession(false);
 
         if(session == null || session.getAttribute("loginUser") == null){
             rs.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            rs.setContentType("application/json");
             rs.setContentType("application/json; charset=UTF-8");
             rs.getWriter().write("{\"msg\": \"회원만 사용 가능합니다.\"}");
             return;

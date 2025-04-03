@@ -14,6 +14,8 @@ import com.example.schedulerproject_jpa.repository.ScheduleRepository;
 import com.example.schedulerproject_jpa.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,10 +60,10 @@ public class CommentService {
 
     /** 댓글 조회 */
     @Transactional
-    public List<CommentResponseDto> getCommentByScheduleId(Long scheduleId){
+    public Page<CommentResponseDto> getCommentByScheduleId(Long scheduleId, Pageable pageable){
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(()-> new IllegalArgumentException("일정이 존재하지 않습니다."));
 
-        return commentRepository.findByScheduleId(scheduleId).stream().map(c -> new CommentResponseDto(c.getId(), c.getComment(), c.getAuthorName(), c.getCreatedAt(), c.getModifiedAt())).toList();
+        return commentRepository.findByScheduleIdPaging(scheduleId, pageable).map(c -> new CommentResponseDto(c.getId(), c.getComment(), c.getAuthorName(), c.getCreatedAt(), c.getModifiedAt()));
     }
 
     /** 댓글 수정 */

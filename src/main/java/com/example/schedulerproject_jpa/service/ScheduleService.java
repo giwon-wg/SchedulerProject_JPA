@@ -3,6 +3,9 @@ package com.example.schedulerproject_jpa.service;
 import com.example.schedulerproject_jpa.dto.ScheduleRequestDto;
 import com.example.schedulerproject_jpa.dto.ScheduleResponseDto;
 import com.example.schedulerproject_jpa.entity.User;
+import com.example.schedulerproject_jpa.exception.custom.ScheduleNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.schedulerproject_jpa.entity.Schedule;
 import com.example.schedulerproject_jpa.repository.ScheduleRepository;
@@ -29,20 +32,20 @@ public class ScheduleService {
     /** 일정 조회 */
     @Transactional(readOnly = true)
     public ScheduleResponseDto getSchedule(Long id){
-        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다."));
+        Schedule schedule = scheduleRepository.findById(id).orElseThrow(ScheduleNotFoundException::new);
         return new ScheduleResponseDto(schedule);
     }
 
     /** 일정 전체 조회 */
     @Transactional(readOnly = true)
-    public List<ScheduleResponseDto> getAllSchedules(){
-        return scheduleRepository.findAll().stream().map(ScheduleResponseDto::new).collect(Collectors.toList());
+    public Page<ScheduleResponseDto> getAllSchedules(Pageable pageable){
+        return scheduleRepository.findAllPaging(pageable).map(ScheduleResponseDto::new);
     }
 
     /** 일정 업데이트 */
     @Transactional
     public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto dto, User loginUser) {
-        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다."));
+        Schedule schedule = scheduleRepository.findById(id).orElseThrow(ScheduleNotFoundException::new);
 
         if (!schedule.getUser().getId().equals(loginUser.getId())) {
             throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
@@ -55,7 +58,7 @@ public class ScheduleService {
     /** 일정 삭제 */
     @Transactional
     public void deleteSchedule(Long id, User loginUser){
-        Schedule schedule = scheduleRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("일정을 찾을 수 없습니다."));
+        Schedule schedule = scheduleRepository.findById(id).orElseThrow(ScheduleNotFoundException::new);
 
         if (!schedule.getUser().getId().equals(loginUser.getId())) {
             throw new IllegalArgumentException("작성자만 삭제할 수 있습니다.");

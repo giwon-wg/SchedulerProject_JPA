@@ -1,6 +1,10 @@
 package com.example.schedulerproject_jpa.exception;
 
 import com.example.schedulerproject_jpa.dto.ErrorResponseDto;
+import com.example.schedulerproject_jpa.exception.custom.PasswordMismatchException;
+import com.example.schedulerproject_jpa.exception.custom.ScheduleNotFoundException;
+import com.example.schedulerproject_jpa.exception.custom.UnauthorizedAccessException;
+import com.example.schedulerproject_jpa.exception.custom.UserNotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpMethod;
@@ -23,18 +27,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleValidationException(MethodArgumentNotValidException e){
         String errorMsg = e.getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining(", "));
         return ResponseEntity.badRequest().body(new ErrorResponseDto("BAD_REQUEST", errorMsg));
-    }
-
-    //비즈니스 로직 예외
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponseDto> errorResponseResponseEntity(IllegalArgumentException e){
-        return ResponseEntity.badRequest().body(new ErrorResponseDto("BAD_REQUEST", e.getMessage()));
-    }
-
-    //Optional 이 없을 경우
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErrorResponseDto> handleNoSuchElement(NoSuchElementException e){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDto("NOT_FOUND", e.getMessage()));
     }
 
     //DB 조건 위반 예외
@@ -61,5 +53,36 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageConversionException.class)
     public ResponseEntity<ErrorResponseDto> handleHttpMessageParse(HttpMessageConversionException e){
         return ResponseEntity.badRequest().body(new ErrorResponseDto("BAD_REQUEST", "잘못된 요청 본문"));
+    }
+
+    //커스텀 예외 처리
+    /** 유저 찾지 못함 */
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleUserNotFound(UserNotFoundException e){
+        return ResponseEntity.status(e.getErrorCode().getStatus()).body(new ErrorResponseDto("USER_NOT_FOUND", e.getMessage()));
+    }
+
+    /** 일정 찾지 못함 */
+    @ExceptionHandler(ScheduleNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleScheduleNotFound(ScheduleNotFoundException e){
+        return ResponseEntity
+                .status(e.getErrorCode().getStatus())
+                .body(new ErrorResponseDto("SCHEDULE_NOT_FOUND", e.getMessage()));
+    }
+
+    /**  */
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<ErrorResponseDto> handleUnauthorized(UnauthorizedAccessException e){
+        return ResponseEntity
+                .status(e.getErrorCode().getStatus())
+                .body(new ErrorResponseDto("UNAUTHORIZED", e.getMessage()));
+    }
+
+    /** 비밀번호 틀림 */
+    @ExceptionHandler(PasswordMismatchException.class)
+    public ResponseEntity<ErrorResponseDto> handlePasswordMismatch(PasswordMismatchException e){
+        return ResponseEntity
+                .status(e.getErrorCode().getStatus())
+                .body(new ErrorResponseDto("PASSWORD_MISMATCH", e.getMessage()));
     }
 }

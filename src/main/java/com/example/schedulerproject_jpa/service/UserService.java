@@ -6,6 +6,8 @@ import com.example.schedulerproject_jpa.config.PasswordEncoder;
 import com.example.schedulerproject_jpa.dto.UserRequestDto;
 import com.example.schedulerproject_jpa.dto.UserResponseDto;
 import com.example.schedulerproject_jpa.entity.User;
+import com.example.schedulerproject_jpa.exception.custom.PasswordMismatchException;
+import com.example.schedulerproject_jpa.exception.custom.UserNotFoundException;
 import com.example.schedulerproject_jpa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,9 +26,7 @@ public class UserService {
     /** 유저 작성 */
     @Transactional
     public UserResponseDto createUser(UserRequestDto dto){
-
         String hashPassword = passwordEncoder.encode(dto.getPassword());
-
         User user = new User(dto.getUserName(), dto.getEmail(), hashPassword);
         User saved = userRepository.save(user);
         return new UserResponseDto(saved);
@@ -35,7 +35,7 @@ public class UserService {
     /** 유저 조회 */
     @Transactional
     public UserResponseDto getUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         return new UserResponseDto(user);
     }
 
@@ -48,7 +48,7 @@ public class UserService {
     /** 유저 수정 */
     @Transactional
     public UserResponseDto updateUser(Long id, UserRequestDto dto){
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
 
         passwordVerifier.verify(dto.getPassword(), user.getPassword());
 
@@ -61,25 +61,24 @@ public class UserService {
     /** 유저 삭제 */
     @Transactional
     public void deleteUser(Long id, UserRequestDto dto){
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
 
         passwordVerifier.verify(dto.getPassword(), user.getPassword());
-
         userRepository.delete(user);
     }
 
     public User login(String email, String password){
-        User user = userRepository.findByEmail(email).orElseThrow(()-> new IllegalArgumentException("존재하지 않는 이메일 입니다."));
+        User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
 
         if(!passwordEncoder.matches(password, user.getPassword())){
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new PasswordMismatchException();
         }
         return user;
     }
 
     @Transactional(readOnly = true)
     public User findUserId(Long id){
-        return userRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
 }

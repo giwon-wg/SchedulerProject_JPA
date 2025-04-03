@@ -29,7 +29,7 @@ public class Schedule {
     @Column(nullable = false, length = 50)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT", length = 200)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String todo;
 
     @Setter(AccessLevel.NONE)

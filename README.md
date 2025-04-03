@@ -28,19 +28,19 @@
 }
 ```
 - 예외 명세서
-  - `200 OK`: 정상 생성
+  - `201 Created`: 일정 생성
   - `401 Unauthorized`: 로그인하지 않은 사용자
 
 ---
 
-#### 일정 조회 API
+#### 일정 전체 조회 API
 - URL: `GET /api/schedules?page=1`
 - 설명: 전체 일정을 페이지 단위로 조정
 - Request Body: X
 - Query Parameters:
   - `page`: 페이지 번호
-  - `size`: 페이지 크기(기본값 10)
-  - `sort`: 정렬 필드(desc)
+  - `size`: 페이지 크기(기본값: 10)
+  - `sort`: 정렬 필드 (기본값: modifiedAt, desc)
 - Response
 ```json
 {
@@ -68,7 +68,7 @@
 
 #### 단건 일정 조회 API
 - URL: `GET /api/schedules/{id}`
-- 설명: 일정의 ID를 기반으로 단건 조회
+- 설명: ID 기반 일정 단건 조회
 - Request Body: X
 - Response
 ```json
@@ -89,7 +89,7 @@
 ---
 
 #### 일정 수정 API
-- URL: `PUT /api/schedules/1`
+- URL: `PUT /api/schedules/{id}`
 - 설명: 해당 ID의 일정 수정(작성자 본인만 수정 가능)
 - Request Body
 ```json
@@ -110,6 +110,7 @@
 ```
 - 예외 명세서
   - `200 OK`: 정상 수정
+  - `401 Unauthorized`: 로그인하지 않음
   - `403 Forbidden`: 작성자가 아님
   - `404 Not Found`: 일정 ID 없음
 ---
@@ -118,18 +119,15 @@
 - URL: `DELETE /api/schedules/1`
 - 설명: 해당 ID의 일정 삭제(작성자 본인만 삭제 가능)
 - Request Body : X
-- Response
-```json
-
-```
+- Response : X
 - 예외 명세서
   - `204 No Content`: 정상 삭제
+  - `401 Unauthorized`: 로그인하지 않음
   - `403 Forbidden`: 작성자가 아님
   - `404 Not Found`: 일정 ID 없음
 ---
 
 ### 유저 API 명세서
-
 
 #### 회원가입 API
 - URL: `POST /api/users/signup`
@@ -153,7 +151,7 @@
 }
 ```
 - 예외 명세서:
-    - `200 OK`: 정상 등록
+    - `201 OK`: 유저 생성
     - `400 Bad Request`: 입력값 검증 실패
     - `409 Conflict`: 중복된 이메일 존재
 
@@ -198,7 +196,7 @@
 ---
 
 #### 유저 정보 수정 API
-- URL: `PUT /api/users`
+- URL: `PUT /api/users/me`
 - 설명: 유저 정보 수정 (현재 비밀번호 필요)
 - Request Body:
 ```json
@@ -227,7 +225,7 @@
 ---
 
 #### 유저 탈퇴 API
-- URL: `DELETE /api/users`
+- URL: `DELETE /api/users/me`
 - 설명: 로그인된 유저 탈퇴 (비밀번호 필요)
 - Request Body:
 ```json
@@ -246,8 +244,6 @@
 
 ### 댓글 API 명세서
 
----
-
 #### 댓글 목록 조회 API
 - URL: `GET /api/comments`
 - 설명: 특정 일정 ID에 해당하는 댓글 목록 조회 (페이징 지원)
@@ -256,7 +252,7 @@
     - `scheduleId`: Long (필수)
     - `page`: 페이지 번호 (기본값 0)
     - `size`: 페이지 크기 (기본값 5)
-    - `sort`: 정렬 필드 (예: `createdAt,asc`)
+    - `sort`: 정렬 필드 (기본값: createdAt, asc)
 - Response:
 ```json
 {

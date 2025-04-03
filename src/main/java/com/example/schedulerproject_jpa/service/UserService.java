@@ -5,6 +5,7 @@ import com.example.schedulerproject_jpa.authentication.PasswordVerifier;
 import com.example.schedulerproject_jpa.config.PasswordEncoder;
 import com.example.schedulerproject_jpa.dto.UserRequestDto;
 import com.example.schedulerproject_jpa.dto.UserResponseDto;
+import com.example.schedulerproject_jpa.dto.UserUpdateRequestDto;
 import com.example.schedulerproject_jpa.entity.User;
 import com.example.schedulerproject_jpa.exception.CustomException;
 import com.example.schedulerproject_jpa.exception.exceptioncode.ErrorCode;
@@ -55,13 +56,17 @@ public class UserService {
 
     /** 유저 수정 */
     @Transactional
-    public UserResponseDto updateUser(Long id, UserRequestDto dto) {
+    public UserResponseDto updateUser(Long id, UserUpdateRequestDto dto) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         passwordVerifier.verify(dto.getPassword(), user.getPassword());
 
-        String hashPassword = BCrypt.withDefaults().hashToString(12, dto.getPassword().toCharArray());
+        String hashPassword = passwordEncoder.encode(dto.getNewPassword());
+
+
         user.Update(dto.getUserName(), dto.getEmail(), hashPassword);
+
+
         return new UserResponseDto(user);
     }
 

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
-public class UserRequestDto {
+public class UserUpdateRequestDto {
 
     @NotBlank(message = "유저명은 필수입니다.")
     @Size(max = 4, message = "유저명은 4자 이하로 작성하여 주세요")
@@ -20,4 +20,7 @@ public class UserRequestDto {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*\\d)[a-z\\d]{4,}$", message = "비밀번호는 영어 소문자와 숫자를 포함한 4자리 이상이여야 합니다.")
     private String password;
 
+    @NotBlank(message = "새 비밀번호는 필수입니다.")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*\\d)[a-z\\d]{4,}$", message = "새 비밀번호는 영어 소문자와 숫자를 포함한 4자리 이상이여야 합니다.")
+    private String newPassword;
 }

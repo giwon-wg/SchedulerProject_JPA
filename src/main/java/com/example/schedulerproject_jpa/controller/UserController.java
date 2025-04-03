@@ -1,10 +1,7 @@
 package com.example.schedulerproject_jpa.controller;
 
 import com.example.schedulerproject_jpa.authentication.LoginSession;
-import com.example.schedulerproject_jpa.dto.ErrorResponseDto;
-import com.example.schedulerproject_jpa.dto.LoginRequestDto;
-import com.example.schedulerproject_jpa.dto.UserRequestDto;
-import com.example.schedulerproject_jpa.dto.UserResponseDto;
+import com.example.schedulerproject_jpa.dto.*;
 import com.example.schedulerproject_jpa.entity.User;
 import com.example.schedulerproject_jpa.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,13 +27,13 @@ public class UserController {
 
     /** 회원가입 */
     @Operation(summary = "회원가입", description = "새로운 사용자 등록")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "회원가입 성공"),
+    @ApiResponses({@ApiResponse(responseCode = "201", description = "회원가입 성공"),
             @ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
             @ApiResponse(responseCode = "409", description = "중복된 이메일 존재", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid UserRequestDto dto){
-        return ResponseEntity.ok(userService.createUser(dto));
+        return ResponseEntity.status(201).body(userService.createUser(dto));
     }
 
     /**유저 단건 조회*/
@@ -63,7 +60,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "비밀번호 불일치", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     @PutMapping("/me")
-    public ResponseEntity<UserResponseDto> updateUser(@RequestBody UserRequestDto dto, HttpSession session){
+    public ResponseEntity<UserResponseDto> updateUser(@RequestBody UserUpdateRequestDto dto, HttpSession session){
         Long userId = LoginSession.getLoginUserId(session);
         return ResponseEntity.ok(userService.updateUser(userId, dto));
     }
@@ -74,15 +71,10 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "로그인하지 않은 사용자", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
             @ApiResponse(responseCode = "403", description = "비밀번호 불일치", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id, @RequestBody UserRequestDto dto, HttpSession session){
-        Long loginUser = LoginSession.getLoginUserId(session);
-
-        if(!loginUser.equals(id)){
-            throw new IllegalArgumentException("본인 정보만 수정 가능합니다.");
-        }
-
-        userService.deleteUser(id, dto);
+    @DeleteMapping("/{me}")
+    public ResponseEntity<Void> deleteUser(@RequestBody UserRequestDto dto, HttpSession session){
+        Long userId = LoginSession.getLoginUserId(session);
+        userService.deleteUser(userId, dto);
         return ResponseEntity.noContent().build();
     }
 

@@ -32,7 +32,7 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<CommentResponseDto> createComment(@RequestBody @Valid CommentRequestDto dto, HttpSession session){
         CommentResponseDto commentResponseDto = commentService.createComment(dto, session);
-        return ResponseEntity.ok(commentResponseDto);
+        return ResponseEntity.status(201).body(commentResponseDto);
     }
 
     /** 댓글 조회*/

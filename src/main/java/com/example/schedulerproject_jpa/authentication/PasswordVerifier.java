@@ -1,6 +1,8 @@
 package com.example.schedulerproject_jpa.authentication;
 
 import com.example.schedulerproject_jpa.config.PasswordEncoder;
+import com.example.schedulerproject_jpa.exception.CustomException;
+import com.example.schedulerproject_jpa.exception.exceptioncode.ErrorCode;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,7 +16,7 @@ public class PasswordVerifier {
 
     public void verify(String inputPassword, String dbPassword){
         if(!passwordEncoder.matches(inputPassword, dbPassword)){
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.PASSWORD_NOT_MATCH);
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.example.schedulerproject_jpa.authentication;
 
 import com.example.schedulerproject_jpa.entity.User;
+import com.example.schedulerproject_jpa.exception.CustomException;
+import com.example.schedulerproject_jpa.exception.exceptioncode.ErrorCode;
 import jakarta.servlet.http.HttpSession;
 
 public class LoginSession {
@@ -11,7 +13,7 @@ public class LoginSession {
     public static Long getLoginUserId(HttpSession session) {
         Object userId = session.getAttribute(loginUserKey);
         if (userId == null || !(userId instanceof Long)) {
-            throw new IllegalArgumentException("로그인된 사용자가 없습니다.");
+            throw new CustomException(ErrorCode.LOGIN_REQUIRED);
         }
         return (Long) userId;
     }

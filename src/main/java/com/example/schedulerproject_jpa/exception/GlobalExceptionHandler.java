@@ -54,9 +54,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(e.getErrorCode().getStatus()).body(new ErrorResponseDto(e.getErrorCode()));
     }
 
-    /** 그 외 모든 예외 */
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDto> handleAll(Exception e) {
-        return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()).body(new ErrorResponseDto(ErrorCode.INTERNAL_SERVER_ERROR));
-    }
+//    /** 그 외 모든 예외 */
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ErrorResponseDto> handleAll(Exception e) {
+//        return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()).body(new ErrorResponseDto(ErrorCode.INTERNAL_SERVER_ERROR));
+//    }
 }

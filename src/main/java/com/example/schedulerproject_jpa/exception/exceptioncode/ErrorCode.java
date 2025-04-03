@@ -1,6 +1,5 @@
 package com.example.schedulerproject_jpa.exception.exceptioncode;
 
-import org.aspectj.bridge.IMessage;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
@@ -25,7 +24,8 @@ public enum ErrorCode {
 
     // 댓글 예외
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT_NOT_FOUND", "댓글을 찾을 수 없습니다."),
-    NOT_COMMENT_OWNER(HttpStatus.FORBIDDEN, "NOT_COMMENT_OWNER", "해당 댓글 작성자가 아닙니다.");
+    NOT_COMMENT_OWNER(HttpStatus.FORBIDDEN, "NOT_COMMENT_OWNER", "해당 댓글 작성자가 아닙니다."),
+    COMMENT_PASSWORD_REQUIRED(HttpStatus.BAD_REQUEST, " COMMENT_PASSWORD_REQUIRED", "비회원은 비밀번호가 필수값입니다.");
 
     private final HttpStatus status;
     private final String code;

@@ -37,7 +37,6 @@ public class CommentService {
 
         String authorName;
         String encodedPassword = null;
-
         Object loginUserId = session.getAttribute("loginUser");
 
         if (loginUserId != null && loginUserId instanceof Long userId) {
@@ -46,7 +45,7 @@ public class CommentService {
         } else {
             authorName = "익명";
             if (dto.getPassword() == null || dto.getPassword().isBlank()) {
-                throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+                throw new CustomException(ErrorCode.COMMENT_PASSWORD_REQUIRED);
             }
             encodedPassword = passwordEncoder.encode(dto.getPassword());
         }
@@ -80,7 +79,7 @@ public class CommentService {
             }
         } else {
             if (dto == null || dto.getPassword() == null || dto.getPassword().isBlank()) {
-                throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+                throw new CustomException(ErrorCode.COMMENT_PASSWORD_REQUIRED);
             }
             passwordVerifier.verify(dto.getPassword(), comment.getPassword());
         }

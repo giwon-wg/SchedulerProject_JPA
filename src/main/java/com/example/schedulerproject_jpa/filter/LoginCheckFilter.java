@@ -1,5 +1,8 @@
 package com.example.schedulerproject_jpa.filter;
 
+import com.example.schedulerproject_jpa.dto.ErrorResponseDto;
+import com.example.schedulerproject_jpa.exception.exceptioncode.ErrorCode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -60,12 +63,19 @@ public class LoginCheckFilter implements Filter {
         HttpSession session = rq.getSession(false);
 
         if(session == null || session.getAttribute("loginUser") == null){
-            rs.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            rs.setContentType("application/json; charset=UTF-8");
-            rs.getWriter().write("{\"msg\": \"회원만 사용 가능합니다.\"}");
+
+            ErrorCode errorCode = ErrorCode.LOGIN_REQUIRED;
+            ErrorResponseDto errorResponsedto = new ErrorResponseDto(errorCode);
+
+            rs.setStatus(errorCode.getStatus().value());
+            rs.setContentType("application/json;charset=UTF-8");
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writeValueAsString(errorResponsedto);
+
+            rs.getWriter().write(json);
             return;
         }
-
         chain.doFilter(request, response);
     }
 }

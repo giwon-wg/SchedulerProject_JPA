@@ -35,44 +35,47 @@ public class UserService {
 
     /** 유저 조회 */
     @Transactional
-    public UserResponseDto getUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    public UserResponseDto getUser(Long requestedId, User loginUser) {
+        // 본인만 자신의 정보 조회 가능
+        if (!requestedId.equals(loginUser.getId())) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+        User user = userRepository.findById(requestedId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         return new UserResponseDto(user);
     }
 
-    /** 유저 전체 조회 */
+    /** 유저 전체 조회 어드민 Only */
     @Transactional
-    public List<UserResponseDto> getAllUser() {
+    public List<UserResponseDto> getAllUser(User loginUser) {
+        if (!loginUser.getRole().equals(User.Role.ADMIN)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
         return userRepository.findAll().stream().map(UserResponseDto::new).collect(Collectors.toList());
     }
 
     /** 유저 수정 */
     @Transactional
     public UserResponseDto updateUser(Long id, UserRequestDto dto) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         passwordVerifier.verify(dto.getPassword(), user.getPassword());
 
         String hashPassword = BCrypt.withDefaults().hashToString(12, dto.getPassword().toCharArray());
-        user.update(dto.getUserName(), dto.getEmail(), hashPassword);
+        user.Update(dto.getUserName(), dto.getEmail(), hashPassword);
         return new UserResponseDto(user);
     }
 
     /** 유저 삭제 */
     @Transactional
     public void deleteUser(Long id, UserRequestDto dto) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         passwordVerifier.verify(dto.getPassword(), user.getPassword());
         userRepository.delete(user);
     }
 
     public User login(String email, String password) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CustomException(ErrorCode.PASSWORD_NOT_MATCH);
@@ -82,7 +85,6 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User findUserId(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 }

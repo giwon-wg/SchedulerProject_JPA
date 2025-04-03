@@ -35,15 +35,23 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
+
     public User(String userName, String email, String password){
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+        this.role = Role.USER;
+    }
+
+    public void Update(String userName, String email, String password){
         this.userName = userName;
         this.email = email;
         this.password = password;
     }
 
-    public void update(String userName, String email, String password){
-        this.userName = userName;
-        this.email = email;
-        this.password = password;
+    public enum Role{
+        USER, ADMIN;
     }
 }
